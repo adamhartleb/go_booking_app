@@ -8,20 +8,25 @@ import (
 	"path/filepath"
 )
 
-var functions template.FuncMap
+var functions = template.FuncMap{}
+var templateCache map[string]*template.Template
 
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	templateCache, err := CreateTemplateCache()
+func init() {
+	tc, err := CreateTemplateCache()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Unable to create Template Cache")
 	}
 
+	templateCache = tc
+}
+
+func RenderTemplate(w http.ResponseWriter, tmpl string) {
 	t, ok := templateCache[tmpl]
 	if !ok {
 		log.Fatal("Template does not exist.")
 	}
 
-	err = t.Execute(w, nil)
+	err := t.Execute(w, nil)
 	if err != nil {
 		fmt.Println("Error writing template to browser", err)
 	}
