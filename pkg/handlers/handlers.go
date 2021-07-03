@@ -3,13 +3,36 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/adamhartleb/go_booking_app/pkg/config"
+	"github.com/adamhartleb/go_booking_app/pkg/models"
 	"github.com/adamhartleb/go_booking_app/pkg/render"
 )
 
-func Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.html")
+type Repository struct {
+	App *config.AppConfig
 }
 
-func About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about.page.html")
+var Repo *Repository
+
+// NewRepo creates a new repository
+func NewRepo(a *config.AppConfig) *Repository {
+	return &Repository{
+		App: a,
+	}
+}
+
+// NewHandlers sets the respository for the handlers
+func NewHandlers(r *Repository) {
+	Repo = r
+}
+
+func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, "home.page.html", &models.TemplateData{})
+}
+
+func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
+	stringMap := make(map[string]string)
+	stringMap["test"] = "hello again"
+
+	render.RenderTemplate(w, "about.page.html", &models.TemplateData{StringMap: stringMap})
 }
