@@ -14,8 +14,6 @@ const PORT = ":8080"
 func main() {
 	var app config.AppConfig
 
-	mux := http.NewServeMux()
-
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("Unable to create Template Cache")
@@ -24,12 +22,11 @@ func main() {
 	app.TemplateCache = tc
 	app.UseCache = false
 
+	mux := Routes(&app)
+
 	repo := handlers.NewRepo(&app)
 	render.NewTemplates(&app)
 	handlers.NewHandlers(repo)
-
-	mux.HandleFunc("/", handlers.Repo.Home)
-	mux.HandleFunc("/about", handlers.Repo.About)
 
 	http.ListenAndServe(PORT, mux)
 }
